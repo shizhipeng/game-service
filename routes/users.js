@@ -7,37 +7,26 @@ var restResult = require('../restResult');
 //注册路由
 //出题
 router.post('/quiz',function(req,res,next){
-	var user = {}, uid = req.body.uid;
-	user.uid = uid;
+	var user = {}, ret = {};
+	user.uid = req.body.uid;
 	user.avatar = req.body.avatar;
 	user.quiz = req.body.quiz;
-	userEntity.findOne({uid, uid}, '_id', function(err, userInfo) {
-		var ret = {};
-		if (userInfo) {
-			ret.code = restResult.REQUEST_ERROR;
-			ret.msg = '目标已存在！';
-			res.send(ret);
-			return;
-		}
-		userEntity.create(user,function(err,userInfo){
-			if(err){//查询异常
-	        	console.log('出题异常!');
-	            ret.code = restResult.SERVER_ERROR;
-	            ret.msg = "服务器异常!";
-	            res.send(ret);
-	            return;
-	        }
-	        if (userInfo._id){
-	        	console.log('出题成功!');
-	        	ret.code = restResult.SUCCESS;
-	        	ret.data = {};
-	        	ret.msg = 'quiz success!'
-	        	console.log(ret)
-	        	res.send(ret);
-	        	return;
-	        }
-		});
-	});
+	user.update = new Date();
+	userEntity.update({uid: req.body.uid}, {$set: user}, {upsert: true}, function(err,count){
+      if (err) {
+      	console.log('出题异常!');
+        ret.code = restResult.SERVER_ERROR;
+        ret.msg = "db error!";
+        res.send(ret);
+        return;
+      }else{
+  		console.log('出题成功!');
+    	ret.code = restResult.SUCCESS;
+    	ret.msg = 'quiz success!'
+    	res.send(ret);    	
+    	return;
+      }
+    });
 });
 //查询出题人
 router.get('/info', function(req, res, next){
