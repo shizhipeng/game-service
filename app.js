@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+var logs = require('./routes/logs');
 
 var restResult = require('./restResult');
 var config = require('./config/config');
@@ -41,6 +42,7 @@ app.all('*',function (req, res, next) {
 });
 app.use('/', index);
 app.use('/users/', users);
+app.use('/logs', logs);
 
 /*app.use(function (req, res, next) {
 	

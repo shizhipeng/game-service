@@ -15,7 +15,9 @@ var userSchema =new base.Schema({
     quiz: String,//我出的题目
     ans: [subScheme],//小伙伴们的答案
     complete: Boolean,
-    create: { type: Date, default: Date.now },
+    wxShared: Boolean,
+    redPocket: Boolean,
+    create: { type: Date, default: Date.now },   
 });
 //subScheme.index({ans_uid:1},{"background" : true});//设置索引
 userSchema.index({uid:1},{"background" : true});//设置索引
