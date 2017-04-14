@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+var logs = require('./routes/logs');
 
 var restResult = require('./restResult');
 var config = require('./config/config');
@@ -26,10 +27,25 @@ app.use(bodyParser.urlencoded({ extended: false, limit: '10000kb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.disable('etag');
+app.all('*',function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  //res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
+  res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
+  res.setHeader('Last-Modified', (new Date()).toUTCString());
+   // if (req.method == 'OPTIONS') {
+   //   res.send(200); /让options请求快速返回/
+   // }
+   // else {
+     next();
+   // }
+});
 app.use('/', index);
 app.use('/users/', users);
+app.use('/logs', logs);
 
-app.use(function (req, res, next) {
+/*app.use(function (req, res, next) {
+	
     res.error = function (errorCode, errorReason) {
     	console.log('something wrong!')
         var rest = new restResult();
@@ -41,19 +57,21 @@ app.use(function (req, res, next) {
 
     res.success = function (returnValue) {
     	console.log('right!');
+
         var rest = new restResult();
         rest.errorCode = RestResult.NO_ERROR;
         rest.returnValue = returnValue || {};
         res.send(rest);
     };
 
-});
+});*/
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
+
 
 // error handler
 app.use(function(err, req, res, next) {
